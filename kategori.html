@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Kategori Produk</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Produk Berdasarkan Kategori</h1>
+  <div id="produk-list" class="produk-container"></div>
+
+  <script>
+    const produk = {
+      nastar: ["Nastar Premium", "Nastar Keju", "Nastar Klasik"],
+      kastengel: ["Kastengel Cheesy", "Kastengel Extra Renyah"],
+      putri_salju: ["Putri Salju Lembut", "Putri Salju Kacang Mede"],
+      lidah_kucing: ["Lidah Kucing Rainbow", "Lidah Kucing Coklat"],
+      kue_coklat: ["Coklat Kering Classic", "Choco Crunchy"]
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const container = document.getElementById("produk-list");
+
+    if (produk[id]) {
+      produk[id].forEach(nama => {
+        container.innerHTML += `<div class="produk-item"><h3>${nama}</h3><p>Harga: Rp50.000</p></div>`;
+      });
+    } else {
+      container.innerHTML = "<p>Kategori tidak ditemukan.</p>";
+    }
+  </script>
+</body>
+</html>

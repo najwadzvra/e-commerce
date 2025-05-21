@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Keranjang Belanja - Rasa Raya Klasik</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2 style="color:#33716f; text-align:center; margin-top: 20px;">Keranjang Belanja Anda</h2>
+<table id="cartTable">
+  <thead>
+    <tr>
+      <th>Produk</th>
+      <th>Harga (Rp)</th>
+      <th>Jumlah</th>
+      <th>Subtotal (Rp)</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody id="cartBody">
+    <!-- Produk keranjang akan muncul di sini -->
+  </tbody>
+</table>
+
+<div class="total" id="totalHarga">Total: Rp 0</div>
+
+<div class="checkout-form">
+  <h3>Checkout & Pembayaran</h3>
+  <form id="checkoutForm">
+    <label for="namaPembeli">Nama Lengkap</label>
+    <input type="text" id="namaPembeli" name="namaPembeli" required />
+
+    <label for="alamatPembeli">Alamat Pengiriman</label>
+    <input type="text" id="alamatPembeli" name="alamatPembeli" required />
+
+    <label for="nomorTelp">Nomor Telepon</label>
+    <input type="tel" id="nomorTelp" name="nomorTelp" required />
+
+    <label for="metodePembayaran">Metode Pembayaran</label>
+    <select id="metodePembayaran" name="metodePembayaran" required>
+      <option value="">-- Pilih Metode Pembayaran --</option>
+      <option value="transfer">Transfer Bank</option>
+      <option value="cod">Bayar di Tempat (COD)</option>
+      <option value="ovo">OVO</option>
+      <option value="gopay">GoPay</option>
+    </select>
+
+    <button type="submit" style="margin-top: 20px;">Bayar Sekarang</button>
+  </form>
+</div>
+
+<script>
+  // Ambil keranjang dari localStorage
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  const cartBody = document.getElementById("cartBody");
+  const totalHargaEl = document.getElementById("totalHarga");
+
+  function renderCart() {
+    cartBody.innerHTML = "";
+    let total = 0;
+
+    if(cart.length === 0) {
+      cartBody.innerHTML = `<tr><td colspan="5">Keranjang Anda kosong.</td></tr>`;
+      totalHargaEl.textContent = "Total: Rp 0";
+      return;
+    }
+
+    cart.forEach((item, index) => {
+      const subtotal = item.price * item.qty;
+      total += subtotal;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.name}</td>
+        <td>${item.price.toLocaleString('id-ID')}</td>
+        <td>
+          <input type="number" min="1" value="${item.qty}" data-index="${index}" class="qtyInput" style="width: 60px;">
+        </td>
+        <td>${subtotal.toLocaleString('id-ID')}</td>
+        <td><button onclick="removeItem(${index})">Hapus</button></td>
+      `;
+      cartBody.appendChild(row);
+    });
+
+    totalHargaEl.textContent = `Total: Rp ${total.toLocaleString('id-ID')}`;
+
+    // Event listener untuk input quantity
+    document.querySelectorAll(".qtyInput").forEach(input => {
+      input.addEventListener("change", function() {
+        let idx = this.getAttribute("data-index");
+        let val = parseInt(this.value);
+        if(val < 1) {
+          val = 1;
+          this.value = 1;
+        }
+        cart[idx].qty = val;
+        saveCart();
+        renderCart();
+      });
+    });
+  }
+
+  function removeItem(index) {
+    if(confirm("Yakin ingin menghapus produk ini dari keranjang?")) {
+      cart.splice(index,1);
+      saveCart();
+      renderCart();
+    }
+  }
+
+  function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }
+
+  // Submit form checkout
+  const checkoutForm = document.getElementById("checkoutForm");
+  checkoutForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    if(cart.length === 0) {
+      alert("Keranjang Anda kosong. Tambahkan produk sebelum checkout.");
+      return;
+    }
+
+    const nama = this.namaPembeli.value.trim();
+    const alamat = this.alamatPembeli.value.trim();
+    const telp = this.nomorTelp.value.trim();
+    const metode = this.metodePembayaran.value;
+
+    if(!nama || !alamat || !telp || !metode) {
+      alert("Mohon lengkapi semua data pada form.");
+      return;
+    }
+
+    // Simulasi proses pembayaran
+    alert(`Terima kasih, ${nama}!\nPesanan Anda berhasil diproses.\nMetode pembayaran: ${metode}\nTotal pembayaran: Rp ${cart.reduce((acc, item) => acc + item.price * item.qty, 0).toLocaleString('id-ID')}`);
+
+    // Bersihkan keranjang setelah checkout
+    cart = [];
+    saveCart();
+    renderCart();
+    this.reset();
+  });
+
+  renderCart();
+</script>
+</body>
+</html>

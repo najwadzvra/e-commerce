@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rasa Raya Klasik - Semua Produk</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div>🍰 Rasa Raya Klasik</div>
+  <!-- <a href="keranjang.html" id="cart-link" aria-label="Menu Keranjang Belanja">
+    🛒 Keranjang <span id="cart-count">0</span>
+  </a> -->
+</header>
+
+<nav class="category-nav">
+  <button id="btn-kuekering" class="active">Kue Kering</button>
+  <button id="btn-kuebasah">Kue Basah</button>
+  <button id="btn-semua">Semua Produk</button> <!-- Tombol baru -->
+</nav>
+
+<div class="container">
+  <section id="kuekering" class="product-section">
+    <h2>Kue Kering</h2>
+    <div class="product-grid" id="grid-kuekering"></div>
+  </section>
+
+  <section id="kuebasah" class="product-section" style="display:none;">
+    <h2>Kue Basah</h2>
+    <div class="product-grid" id="grid-kuebasah"></div>
+  </section>
+
+  <section id="semuaProduk" class="product-section" style="display:none;">
+    <h2>Semua Produk</h2>
+    <div class="product-grid" id="grid-semua"></div>
+  </section>
+</div>
+
+<script>
+  // Data produk lengkap (nama, gambar, harga)
+  const produkKueKering = [
+    {name: "Nastar", image: "nastar.jpg", price: 25000},
+    {name: "Kastengel", image: "kastangel.jpg", price: 22000},
+    {name: "Putri Salju", image: "putri.jpg", price: 28000},
+    {name: "Sagu Keju", image: "sagu.jpg", price: 20000},
+    {name: "Cookies Coklat", image: "cookies.jpg", price: 26000},
+  ];
+
+  const produkKueBasah = [
+    {name: "Lapis Legit", image: "lapis.jpg", price: 50000},
+    // Bisa tambah produk lain
+  ];
+
+  const semuaProduk = [...produkKueKering, ...produkKueBasah]; // Gabungkan produk kue kering dan basah
+
+  // Render produk di grid
+    function renderProduk(containerId, produkArray) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      
+      if (produkArray.length === 0) {
+        container.innerHTML = '<p class="no-products">Tidak ada produk yang sesuai dengan filter</p>';
+        return;
+      }
+      
+      produkArray.forEach(p => {
+        const card = document.createElement('div');
+        card.classList.add('product-card');
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" />
+          <p>${p.name}</p>
+          <p class="price">Rp ${p.price.toLocaleString('id-ID')}</p>
+          <button onclick="addToCart('${p.name}', ${p.price})">Tambah ke Keranjang</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+  // Tampilkan produk awal kategori kue kering
+  renderProduk('grid-kuekering', produkKueKering);
+
+  // Toggle kategori
+  const btnKueKering = document.getElementById('btn-kuekering');
+  const btnKueBasah = document.getElementById('btn-kuebasah');
+  const btnSemua = document.getElementById('btn-semua');
+  const sectionKueKering = document.getElementById('kuekering');
+  const sectionKueBasah = document.getElementById('kuebasah');
+  const sectionSemua = document.getElementById('semuaProduk');
+
+  btnKueKering.addEventListener('click', () => {
+    btnKueKering.classList.add('active');
+    btnKueBasah.classList.remove('active');
+    btnSemua.classList.remove('active');
+    sectionKueKering.style.display = 'block';
+    sectionKueBasah.style.display = 'none';
+    sectionSemua.style.display = 'none';
+  });
+
+  btnKueBasah.addEventListener('click', () => {
+    btnKueBasah.classList.add('active');
+    btnKueKering.classList.remove('active');
+    btnSemua.classList.remove('active');
+    sectionKueBasah.style.display = 'block';
+    sectionKueKering.style.display = 'none';
+    sectionSemua.style.display = 'none';
+    // Render kue basah saat pertama kali klik
+    if (!sectionKueBasah.dataset.rendered) {
+      renderProduk('grid-kuebasah', produkKueBasah);
+      sectionKueBasah.dataset.rendered = 'true';
+    }
+  });
+
+  btnSemua.addEventListener('click', () => {
+    btnSemua.classList.add('active');
+    btnKueKering.classList.remove('active');
+    btnKueBasah.classList.remove('active');
+    sectionSemua.style.display = 'block';
+    sectionKueKering.style.display = 'none';
+    sectionKueBasah.style.display = 'none';
+    // Render semua produk saat pertama kali klik
+    if (!sectionSemua.dataset.rendered) {
+      renderProduk('grid-semua', semuaProduk);
+      sectionSemua.dataset.rendered = 'true';
+    }
+  });
+
+  // Tambahkan di awal script (setelah deklarasi produk)
+  document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const kategori = params.get('kategori');
+      
+      // Jika ada parameter kategori, tampilkan sesuai kategori
+      if (kategori) {
+          switch(kategori) {
+              case 'kuekering':
+                  btnKueKering.click();
+                  break;
+              case 'kuebasah':
+                  btnKueBasah.click();
+                  break;
+              case 'semua':
+                  btnSemua.click();
+                  break;
+              default:
+                  btnKueKering.click();
+          }
+      } else {
+          // Default tampilkan kue kering jika tidak ada parameter
+          btnKueKering.click();
+      }
+  });
+
+  // Fungsi untuk memfilter produk berdasarkan harga
+function filterByPrice(products, min, max) {
+  return products.filter(product => {
+    const price = product.price;
+    return (!min || price >= parseInt(min)) && 
+           (!max || price <= parseInt(max));
+  });
+}
+
+// Fungsi untuk menerapkan filter
+  function applyFilters() {
+    const params = new URLSearchParams(window.location.search);
+    const filterType = params.get('filter');
+    
+    if (filterType === 'harga') {
+      const min = params.get('min');
+      const max = params.get('max');
+      
+      // Filter semua produk
+      const filteredKueKering = filterByPrice(produkKueKering, min, max);
+      const filteredKueBasah = filterByPrice(produkKueBasah, min, max);
+      const filteredSemua = filterByPrice(semuaProduk, min, max);
+      
+      // Render produk yang sudah difilter
+      renderProduk('grid-kuekering', filteredKueKering);
+      renderProduk('grid-kuebasah', filteredKueBasah);
+      renderProduk('grid-semua', filteredSemua);
+      
+      // Update tampilan kategori aktif
+      document.querySelectorAll('.product-section').forEach(section => {
+        section.style.display = 'none';
+      });
+      document.getElementById('semuaProduk').style.display = 'block';
+      document.querySelectorAll('.category-nav button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById('btn-semua').classList.add('active');
+    }
+  }
+
+  // Panggil applyFilters saat halaman dimuat
+  document.addEventListener('DOMContentLoaded', function() {
+    // Kode kategori yang sudah ada...
+    applyFilters();
+  });
+
+  // Keranjang di localStorage
+  const cartCount = document.getElementById('cart-count');
+
+  function getCart() {
+    return JSON.parse(localStorage.getItem('cart')) || [];
+  }
+
+  function saveCart(cart) {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
+
+  function updateCartCount() {
+    const cart = getCart();
+    const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+    if (totalItems > 0) {
+      cartCount.style.display = 'inline-block';
+      cartCount.textContent = totalItems;
+    } else {
+      cartCount.style.display = 'none';
+    }
+  }
+
+  // Tambah ke keranjang dengan quantity handling
+  function addToCart(name, price) {
+    const cart = getCart();
+    const index = cart.findIndex(item => item.name === name);
+    if (index > -1) {
+      cart[index].qty++;
+    } else {
+      cart.push({name, price, qty: 1});
+    }
+    saveCart(cart);
+    updateCartCount();
+    alert(name + ' berhasil ditambahkan ke keranjang!');
+  }
+
+  // Update tampilan hitung saat halaman dibuka
+  updateCartCount();
+
+</script>
+
+</body>
+</html>

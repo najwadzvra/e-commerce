@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Hasil Pencarian</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+  <div>🍰 Rasa Raya Klasik</div>
+    <!-- <a href="keranjang.html" id="cart-link" aria-label="Menu Keranjang Belanja">
+      🛒 Keranjang <span id="cart-count">0</span>
+    </a> -->
+  </header>
+  <div class="container">
+    <h1>Hasil Pencarian</h1>
+    <div class="product-grid" id="hasil-pencarian"></div>
+  </div>
+
+  <script>
+    // Gunakan data produk yang sama dengan produk.html
+    const semuaProduk = [
+      {name: "Nastar", image: "nastar.jpg", price: 25000},
+      {name: "Kastengel", image: "kastangel.jpg", price: 22000},
+      {name: "Putri Salju", image: "putri.jpg", price: 28000},
+      {name: "Sagu Keju", image: "sagu.jpg", price: 20000},
+      {name: "Cookies Coklat", image: "cookies.jpg", price: 26000},
+      {name: "Lapis Legit", image: "lapis_legit.jpg", price: 50000}
+    ];
+
+    const params = new URLSearchParams(window.location.search);
+    const keyword = params.get("keyword")?.toLowerCase() || "";
+    const container = document.getElementById("hasil-pencarian");
+
+    // Filter produk berdasarkan keyword
+    const hasil = semuaProduk.filter(p => 
+      p.name.toLowerCase().includes(keyword)
+    );
+
+    // Render hasil pencarian
+    if (hasil.length > 0) {
+      hasil.forEach(p => {
+        const card = document.createElement('div');
+        card.classList.add('product-card');
+        card.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" />
+          <p>${p.name}</p>
+          <p class="price">Rp ${p.price.toLocaleString('id-ID')}</p>
+          <button onclick="addToCart('${p.name}', ${p.price})">Tambah ke Keranjang</button>
+        `;
+        container.appendChild(card);
+      });
+    } else {
+      container.innerHTML = "<p>Produk tidak ditemukan.</p>";
+    }
+
+    // Fungsi keranjang (salin dari produk.html)
+    function addToCart(name, price) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const index = cart.findIndex(item => item.name === name);
+      if (index > -1) {
+        cart[index].qty++;
+      } else {
+        cart.push({name, price, qty: 1});
+      }
+      localStorage.setItem('cart', JSON.stringify(cart));
+      alert(name + ' berhasil ditambahkan ke keranjang!');
+    }
+  </script>
+</body>
+</html>

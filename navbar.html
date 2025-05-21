@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Navbar</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="logo">🍪 Rasa Raya Klasik</div>
+      <ul>
+        <li><a href="beranda.html" target="utama">Home</a></li>
+        <li><a href="produk.html" target="utama">Produk</a></li>
+        <li><a href="survey.html" target="utama">Form Survey</a></li>
+      </ul>
+      <button
+        aria-label="Open cart"
+        class="cart-button"
+        id="cart-button"
+        title="Lihat Keranjang"
+        onclick="window.open('keranjang.html', 'utama')"
+      >
+        <i class="fa-solid fa-cart-shopping" style="color: white"></i>
+        <span class="cart-count" id="cart-count" aria-live="polite">0</span>
+      </button>
+    </div>
+    <marquee
+      ><font face="black" color="white" class="mark" size="5"
+        ><b>🌙 Selamat Datang di Rasa Raya Klasik 🌙</b></font
+      ></marquee
+    >
+
+    <script>
+      // Simulasi jumlah keranjang dari localStorage atau array
+      const jumlahItem = 3; // contoh
+      document.getElementById("cart-count").innerText = jumlahItem;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar Kategori</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="sidebar-content">
+    <h2>Pencarian</h2>
+    <form class="search-form" onsubmit="return cariProduk()">
+      <input type="text" id="keyword" placeholder="Cari produk...">
+      <button type="submit">Cari</button>
+    </form>
+
+    <h2>Kategori Kue</h2>
+      <ul class="kategori-list">
+          <li><a href="produk.html?kategori=kuekering" target="utama">Kue Kering</a></li>
+          <li><a href="produk.html?kategori=kuebasah" target="utama">Kue Basah</a></li>
+          <li><a href="produk.html?kategori=semua" target="utama">Semua Produk</a></li>
+      </ul>
+
+    <h2>Filter Harga</h2>
+    <form class="filter-harga" onsubmit="return filterHarga()">
+      <div class="input-group">
+        <label for="min_harga">Min:</label>
+        <input type="number" id="min_harga" placeholder="Rp">
+      </div>
+      <div class="input-group">
+        <label for="max_harga">Maks:</label>
+        <input type="number" id="max_harga" placeholder="Rp">
+      </div>
+      <button type="submit">Terapkan</button>
+    </form>
+
+  <script>
+    function cariProduk() {
+      const keyword = document.getElementById('keyword').value;
+      if (keyword.trim() !== "") {
+        parent.frames['utama'].location.href = `search.html?keyword=${encodeURIComponent(keyword)}`;
+      }
+      return false;
+    } 
+
+    function filterHarga() {
+      const min = document.getElementById('min_harga').value;
+      const max = document.getElementById('max_harga').value;
+      
+      // Validasi input
+      if ((min && isNaN(min)) || (max && isNaN(max))) {
+        alert("Masukkan angka yang valid untuk filter harga");
+        return false;
+      }
+
+      // Redirect ke halaman produk dengan parameter harga
+      parent.frames['utama'].location.href = `produk.html?filter=harga&min=${min || ''}&max=${max || ''}`;
+      return false;
+    }
+  </script>
+</body>
+</html>

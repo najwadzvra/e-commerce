@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Form Survey - Rasa Raya Klasik</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+    <main style="max-width:600px; margin: 20px auto; padding: 10px;">
+        <h2 style="color:#33716f; text-align:center;">FORM SURVEY<br>Kepuasan Pelanggan Kue Lebaran</h2>
+
+        <form name="survey" id="surveyForm">
+            <input type="number" placeholder="NO. INVOICE PEMBELIAN" name="vtiket" id="vtiket" size="46" /><br /><br />
+            <input type="text" placeholder="NAMA PELANGGAN" name="vnama" id="vnama" size="46" /><br /><br />
+
+            <label><b>JENIS KUE YANG DIBELI</b></label><br />
+            <select name="vkategori" id="vkategori" style="width:100%; padding: 8px;">
+                <option value="">-- Pilih Jenis Kue --</option>
+                <option value="Kastengel">Kastengel</option>
+                <option value="Nastar">Nastar</option>
+                <option value="Putri Salju">Putri Salju</option>
+                <option value="Sagu Keju">Sagu Keju</option>
+                <option value="Cookies Coklat">Cookies Coklat</option>
+            </select><br /><br />
+
+            <label><b>LAYANAN PENJUAL</b></label><br />
+            <select name="vhandle" id="vhandle" style="width:100%; padding: 8px;">
+                <option value="">-- Pilih Layanan --</option>
+                <option value="Pelayanan Ramah">Pelayanan Ramah</option>
+                <option value="Pengiriman Cepat">Pengiriman Cepat</option>
+                <option value="Kemasan Rapi">Kemasan Rapi</option>
+                <option value="Respon Cepat">Respon Cepat</option>
+                <option value="Lainnya">Lainnya</option>
+            </select><br /><br />
+
+            <label><b>TINGKAT KEPUASAN</b></label><br />
+            <select name="vnilai" id="vnilai" style="width:100%; padding: 8px;">
+                <option value="">-- Pilih Kepuasan --</option>
+                <option value="10 - Sangat Buruk">10 - Sangat Buruk</option>
+                <option value="30 - Kurang Puas">30 - Kurang Puas</option>
+                <option value="50 - Cukup Puas">50 - Cukup Puas</option>
+                <option value="70 - Puas">70 - Puas</option>
+                <option value="100 - Sangat Puas">100 - Sangat Puas</option>
+            </select><br /><br />
+
+            <button type="button" onclick="SubmitData();" class="btn">SUBMIT</button>
+            <button type="button" onclick="UpdateData();" class="btn">UPDATE</button>
+        </form>
+    </main>
+
+    <main style="max-width:700px; margin: 20px auto; padding: 10px;">
+        <table id="survey" cellpadding="5" border="1" style="width:100%; border-collapse: collapse;">
+            <thead style="background-color:#33716f; color:white;">
+                <tr>
+                    <th>NO. INVOICE</th>
+                    <th>NAMA PELANGGAN</th>
+                    <th>JENIS KUE</th>
+                    <th>LAYANAN</th>
+                    <th>KEPUASAN</th>
+                    <th colspan="2">OPTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data akan muncul di sini -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        var rIndex;
+        var table = document.getElementById("survey").getElementsByTagName("tbody")[0];
+
+        function SubmitData() {
+            if (!HarusIsiData()) {
+                var newRow = table.insertRow(table.rows.length);
+                var vtiket = document.getElementById("vtiket").value;
+                var vnama = document.getElementById("vnama").value;
+                var vkategori = document.getElementById("vkategori").value;
+                var vhandle = document.getElementById("vhandle").value;
+                var vnilai = document.getElementById("vnilai").value;
+
+                newRow.insertCell(0).innerText = vtiket;
+                newRow.insertCell(1).innerText = vnama;
+                newRow.insertCell(2).innerText = vkategori;
+                newRow.insertCell(3).innerText = vhandle;
+                newRow.insertCell(4).innerText = vnilai;
+
+                var cellEdit = newRow.insertCell(5);
+                var cellDelete = newRow.insertCell(6);
+
+                cellEdit.innerHTML = "<button onclick='EditData(this)'>Edit</button>";
+                cellDelete.innerHTML = "<button onclick='DeleteData(this)'>Delete</button>";
+
+                clearform();
+                alert("Terima kasih atas feedback Anda! Data telah dikirim.");
+            }
+        }
+
+        function EditData(btn) {
+            rIndex = btn.parentElement.parentElement.rowIndex;
+            var row = btn.parentElement.parentElement;
+
+            document.getElementById("vtiket").value = row.cells[0].innerText;
+            document.getElementById("vnama").value = row.cells[1].innerText;
+            document.getElementById("vkategori").value = row.cells[2].innerText;
+            document.getElementById("vhandle").value = row.cells[3].innerText;
+            document.getElementById("vnilai").value = row.cells[4].innerText;
+
+            alert("Silakan ubah data pelanggan pada form dan klik UPDATE.");
+        }
+
+        function UpdateData() {
+            if (!HarusIsiData() && rIndex != null) {
+                var row = table.rows[rIndex - 1]; // tbody rowIndex dimulai 0, table baris header 1
+
+                row.cells[0].innerText = document.getElementById("vtiket").value;
+                row.cells[1].innerText = document.getElementById("vnama").value;
+                row.cells[2].innerText = document.getElementById("vkategori").value;
+                row.cells[3].innerText = document.getElementById("vhandle").value;
+                row.cells[4].innerText = document.getElementById("vnilai").value;
+
+                clearform();
+                alert("Update Data Berhasil");
+                rIndex = null;
+            }
+        }
+
+        function DeleteData(btn) {
+            if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                var row = btn.parentElement.parentElement;
+                row.remove();
+                alert("Data Berhasil Dihapus");
+                clearform();
+                rIndex = null;
+            }
+        }
+
+        function clearform() {
+            document.getElementById("vtiket").value = "";
+            document.getElementById("vnama").value = "";
+            document.getElementById("vkategori").value = "";
+            document.getElementById("vhandle").value = "";
+            document.getElementById("vnilai").value = "";
+        }
+
+        function HarusIsiData() {
+            if (document.getElementById("vtiket").value === "") {
+                alert("~No. Invoice~ HARUS DI ISI !!");
+                return true;
+            }
+            if (document.getElementById("vnama").value === "") {
+                alert("~Nama Pelanggan~ HARUS DI ISI !!");
+                return true;
+            }
+            if (document.getElementById("vkategori").value === "") {
+                alert("~Jenis Kue~ HARUS DI ISI !!");
+                return true;
+            }
+            if (document.getElementById("vhandle").value === "") {
+                alert("~Layanan~ HARUS DI ISI !!");
+                return true;
+            }
+            if (document.getElementById("vnilai").value === "") {
+                alert("~Nilai Kepuasan~ HARUS DI ISI !!");
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>
